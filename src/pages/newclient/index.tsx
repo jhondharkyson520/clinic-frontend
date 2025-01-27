@@ -26,14 +26,9 @@ export default function NewClient(){
     const [valor, setValor] = useState('00.00');
     const [valorMask, setValorMask] = useState('');
     const [quantidade, setQuantidade] = useState('');
-    const [tipoPlano, setTipoPlano] = useState('');
     const [planoFamiliar, setPlanoFamiliar] = useState('');
-    const [tipoPacote, setTipoPacote] = useState('');
+    const [tipoPacote, setTipoPacote] = useState('Mensal');
     const [situacao, setSituacao] = useState(true);
-
-    const [planoFamiliarDisabled, setPlanoFamiliarDisabled] = useState(true);
-    const [dataVencimentoDisabled, setDataVencimentoDisabled] = useState(true);
-
     const [camposFaltando, setCamposFaltando] = useState<string[]>([]);
 
 
@@ -49,7 +44,7 @@ export default function NewClient(){
       
     };
   
-   const handleValorChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const handleValorChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const rawValue = e.target.value;       
        
  
@@ -60,25 +55,11 @@ export default function NewClient(){
 
         setValor(formattedValue); 
         setValorMask(formattedValueWithSymbol);                   
-      };     
+    };     
       
-      
-
-    const handleTipoPacoteChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-        setTipoPacote(e.target.value);
-        setDataV('');
-        setDataVencimentoDisabled(e.target.value !== 'Mensal');
-    };
-
-    const handleTipoPlanoChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-        setTipoPlano(e.target.value);
-        setPlanoFamiliar('');
-        setPlanoFamiliarDisabled(e.target.value !== 'Familiar');
-    };
-
     useEffect(() => {
       console.log('situacao3:', situacao);
-  }, [situacao]);
+    }, [situacao]);
 
     async function handleRegister(event: FormEvent) {
         event.preventDefault();
@@ -91,8 +72,6 @@ export default function NewClient(){
       if (telefone === '') camposFaltando.push('Telefone');
       if (endereco === '') camposFaltando.push('Endereço');
       if (quantidade === '') camposFaltando.push('Quantidade de Sessões');
-      if (tipoPlano === '') camposFaltando.push('Tipo do Plano');
-      if (tipoPacote === '') camposFaltando.push('Tipo do Pacote');
 
       if (camposFaltando.length > 0) {
 
@@ -112,24 +91,14 @@ export default function NewClient(){
               const isBeforeOrEqualToday = selectedDate && selectedDate <= new Date();
               situacaoPacote = !isBeforeOrEqualToday;
           }
-
-          if (planoFamiliar === 'Dependente'){
-            situacaoPacote = true;
-          }
-
           // Formatar a data de vencimento para enviar ao servidor
-          const formattedDataVencimento = tipoPacote === 'Mensal' ? (selectedDate ? selectedDate.toLocaleDateString('pt-BR') : null) : null;
-
-
-      
+          const formattedDataVencimento = tipoPacote === 'Mensal' ? (selectedDate ? selectedDate.toLocaleDateString('pt-BR') : null) : null;      
           const requestData = {
             name,
             email,
             cpf,
             telefone,
             endereco,
-            tipoPlano,
-            planoFamiliar,
             dataVencimento: formattedDataVencimento,
             valorPlano: parseFloat(valor),
             quantidadeSessoes: parseInt(quantidade, 10),
@@ -162,10 +131,6 @@ export default function NewClient(){
         setValorMask('');
         setEndereco('');
         setQuantidade('');
-        setTipoPlano('');
-        setPlanoFamiliar('');
-        setTipoPacote('');
-        
     }
 
     const { listOpen } = useListOpen();
@@ -192,7 +157,7 @@ export default function NewClient(){
       console.log('situacao3:', !isBeforeOrEqualToday);
     }, [selectedDate]);    
     
-    const currentDate = new Date().toISOString().split('T')[0]; 
+    //const currentDate = new Date().toISOString().split('T')[0]; 
 
     return(
         <>
@@ -240,43 +205,7 @@ export default function NewClient(){
                         value={endereco}
                         onChange={(e) => setEndereco(e.target.value)}  
                     />
-
-                    <div className={styles.containerSelects}>
-                        <select
-                            id="tipoPlano"
-                            value={tipoPlano}
-                            onChange={handleTipoPlanoChange}
-                        >
-                            <option value="" disabled hidden>Tipo do Plano</option>
-                            <option value="Individual">Individual</option>
-                            <option value="Familiar">Familiar</option>
-                        </select>
-
-                        <select
-                            id="planoFamiliar"
-                            value={planoFamiliar}
-                            onChange={(e) => setPlanoFamiliar(e.target.value)}
-                            disabled={planoFamiliarDisabled}
-                        >
-                            <option value="" disabled hidden>Plano Familiar</option>
-                            <option value="Dependente">Dependente</option>
-                            <option value="Responsável">Responsável</option>
-                        </select>
-
-                        <select
-                            id="tipoPacote"
-                            value={tipoPacote}
-                            onChange={handleTipoPacoteChange}
-                        >
-                            <option value="" disabled hidden>Tipo do Pacote</option>
-                            <option value="Mensal">Mensal</option>
-                            <option value="Sessões">Sessões</option>
-                        </select>
-                    </div>
-
-
-                    {tipoPacote !==  'Mensal' ? <></> : 
-                      
+                     
                       <DatePicker
                         selected={selectedDate}
                         onChange={handleDateChange}
@@ -294,7 +223,6 @@ export default function NewClient(){
                         open={isDatePickerOpen}
                         locale="ptBR"
                       />
-                      }
                                    
                                       
                     {planoFamiliar === 'Dependente' ? <></>: 

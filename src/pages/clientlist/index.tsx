@@ -19,8 +19,6 @@ type ListProps = {
     email: string;
     telefone: string;
     dataVencimento?: Date | null;
-    tipoPlano: string;
-    planoFamiliar: string;
     valorPlano: number | string;
     quantidadeSessoes?: number;
     situacao: boolean;
@@ -80,31 +78,6 @@ export default function ClientList({ clients }: ClientProps) {
         fetchData();
     }, []);
 
-
-    const handleDesativar = async (id: string) => {
-        
-        try {
-
-            const requestData = {
-                id: id, 
-                tipoPlano: 'Desativado',
-                valorPlano: 0.00,                
-                situacao: true,
-              };
-
-            const apiClient = setupAPIClient(id);
-            await apiClient.put(`/client/update/${id}`, requestData);
-            const updatedClientList = clientList.filter((client) => client.id !== id);
-            setClientList(updatedClientList);
-
-        } catch (error) {
-            console.error("Erro ao desativar o cliente:", error);
-          
-        }
-
-      };
-
-
       const renderStatus = (client: any) => {
         if (client.tipoPlano === 'Desativado') {
           return <span className={styles.dependenteText}>Desativado</span>;
@@ -157,7 +130,6 @@ export default function ClientList({ clients }: ClientProps) {
                             <tr>
                                 <th className={styles.tagCell}></th>
                                 <th className={styles.tableCell}>Nome</th>
-                                <th className={styles.tableCellDisable}>Tipo do plano</th>
                                 <th className={styles.tableCell}>Vencimento</th>
                                 <th className={styles.tableCellDisable}>Telefone</th>
                                 <th className={styles.tableCellDisable}>Sessões</th>
@@ -181,11 +153,8 @@ export default function ClientList({ clients }: ClientProps) {
                                         <td className={`${styles.tableCell} ${styles.nameCell}`}>
                                             {client.name.length > 10 ? `${client.name.slice(0, 10)}...` : client.name}
                                         </td>
-                                        <td className={`${styles.disableCell} ${styles.nameCell}`}>
-                                            {client.tipoPlano.length > 10 ? `${client.tipoPlano.slice(0, 10)}...` : client.tipoPlano}
-                                        </td>
-                                        <td className={client.tipoPlano === 'Desativado' ? styles.buttonDelete : styles.tableCell} >
-                                            {client.tipoPlano === 'Desativado' ? 'Desativado' : client.dataVencimento ? (
+                                        <td className={ styles.buttonDelete} >
+                                            {client.dataVencimento ? (
                                                 formatDate(client.dataVencimento)
                                             ) : (
                                                 
@@ -210,7 +179,6 @@ export default function ClientList({ clients }: ClientProps) {
                                         </td>
 
                                         <td className={`${styles.tableCell} ${styles.buttonCell}`}>
-                                        {client.tipoPlano !== 'Desativado' && (
                                             <button
                                             onClick={() => handleOpenEdit(client.id)}
                                             className={styles.buttonEdit}
@@ -218,12 +186,12 @@ export default function ClientList({ clients }: ClientProps) {
                                             Editar
                                             <FiEdit2 size={17} color="#3FFFA3" />
                                             </button>
-                                        )}
+                                        
 
                                             <button 
-                                            className={client.tipoPlano === 'Desativado' ? styles.buttonEdit : styles.buttonDelete } 
-                                            onClick={client.tipoPlano === 'Desativado' ? (() => handleOpenEdit(client.id)) : (() => handleDesativar(client.id))}>
-                                                {client.tipoPlano === 'Desativado' ? <>Ativar <GrStatusDisabledSmall size={17} color="#3FFFA3" /></> : <>Desativar <GrDisabledOutline size={17} color="#F13D49" /></>}
+                                            className={styles.buttonDelete } 
+                                            onClick={(() => handleDelete(client.id))}>
+                                                {<>Deletar <GrDisabledOutline size={17} color="#F13D49" /></>}
                                                 
                                             </button>
                                         </td>

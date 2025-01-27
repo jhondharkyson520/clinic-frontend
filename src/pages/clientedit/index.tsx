@@ -29,15 +29,8 @@ export default function ClientEdit({ id }: Props){
     const [valor, setValor] = useState('');
     const [valorMask, setValorMask] = useState('');
     const [quantidade, setQuantidade] = useState('');
-    const [tipoPlano, setTipoPlano] = useState('');
-    const [planoFamiliar, setPlanoFamiliar] = useState('');
-    const [tipoPacote, setTipoPacote] = useState('');
+    const [tipoPacote, setTipoPacote] = useState('Mensal');
     const [situacao, setSituacao] = useState(false);
-
-    const [planoFamiliarDisabled, setPlanoFamiliarDisabled] = useState(true);
-    const [dataVencimentoDisabled, setDataVencimentoDisabled] = useState(true);
-
-    const [camposFaltando, setCamposFaltando] = useState<string[]>([]);
     const router = useRouter();
 
     
@@ -62,9 +55,6 @@ export default function ClientEdit({ id }: Props){
           setDataV(clientData.dataVencimento);
           setValorMask(clientData.valorPlano);
           setQuantidade(clientData.quantidadeSessoes);
-          setTipoPlano(clientData.tipoPlano);
-          setPlanoFamiliar(clientData.planoFamiliar);
-          setTipoPacote(clientData.dataVencimento ? 'Mensal' : 'Sessões');
           setSituacao(clientData.situacao);
           
         } catch (error) {
@@ -98,31 +88,9 @@ export default function ClientEdit({ id }: Props){
         setValor(formattedValue); 
         setValorMask(formattedValueWithSymbol);  
 
-      };
-      
-      
-      
-      
+      };   
 
-    const handleTipoPacoteChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-        setTipoPacote(e.target.value);
-        setDataV('');
-        setDataVencimentoDisabled(e.target.value !== 'Mensal');
-    };
-
-    const handleTipoPlanoChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-        setTipoPlano(e.target.value);
-        setPlanoFamiliar('');
-        setPlanoFamiliarDisabled(e.target.value !== 'Familiar');
-    };
-
-    const handleTeste = (e: React.ChangeEvent<HTMLSelectElement>) => {
-      setPlanoFamiliar(e.target.value);
-    };
-
-   
-
-    async function handleRegister(event: FormEvent) {
+    async function handleUpdate(event: FormEvent) {
       event.preventDefault();
           
       const camposFaltando: string[] = [];
@@ -133,10 +101,7 @@ export default function ClientEdit({ id }: Props){
       if (telefone === '') camposFaltando.push('Telefone');
       if (endereco === '') camposFaltando.push('Endereço');
       if (valorMask === '') camposFaltando.push('Valor do Plano');
-      if (quantidade === '') camposFaltando.push('Quantidade de Sessões');
-      if (tipoPlano === '') camposFaltando.push('Tipo do Plano');
-      if (tipoPacote === '') camposFaltando.push('Tipo do Pacote');
-    
+      if (quantidade === '') camposFaltando.push('Quantidade de Sessões');    
       if (camposFaltando.length > 0) {
         camposFaltando.forEach((campo) => {
           toast.error(`O campo '${campo}' é obrigatório.`);
@@ -149,19 +114,17 @@ export default function ClientEdit({ id }: Props){
         const dataVencimentoFormatted = selectedDate ? selectedDate.toLocaleDateString('pt-BR') : null;
         
           const requestData = {
-          id: idClient, 
-          name,
-          email,
-          cpf,
-          telefone,
-          endereco,
-          tipoPlano,
-          planoFamiliar,
-          dataVencimento: dataVencimentoFormatted, 
-          valorPlano: parseFloat(valor),
-          quantidadeSessoes: parseInt(quantidade, 10),
-          situacao,
-        };
+            id: idClient, 
+            name,
+            email,
+            cpf,
+            telefone,
+            endereco,
+            dataVencimento: dataVencimentoFormatted, 
+            valorPlano: parseFloat(valor),
+            quantidadeSessoes: parseInt(quantidade, 10),
+            situacao,
+          };
     
         const apiClient = setupAPIClient();
         const response = await apiClient.put(`/client/update/${idClient}`, requestData); 
@@ -169,7 +132,7 @@ export default function ClientEdit({ id }: Props){
         router.push('/clientlist');
 
       } catch (error) {
-        //console.log('Erro ao atualizar cliente:', error);
+        console.log('Erro ao atualizar cliente:', error);
         toast.error('Erro ao atualizar cliente');
       }
     }
@@ -202,7 +165,7 @@ export default function ClientEdit({ id }: Props){
             <main className={styles.container}>
                 <h1>Editar dados do Cliente</h1>
 
-                <form className={styles.form}  onSubmit={handleRegister}>
+                <form className={styles.form}  onSubmit={handleUpdate}>
                       
                     
                       <input 
@@ -240,40 +203,6 @@ export default function ClientEdit({ id }: Props){
                         onChange={(e) => setEndereco(e.target.value)}  
                     />
 
-                    <div className={styles.containerSelects}>
-                        <select
-                            id="tipoPlano"
-                            value={tipoPlano}
-                            onChange={handleTipoPlanoChange}
-                        >
-                            <option value="" disabled hidden>Tipo do Plano</option>
-                            <option value="Individual">Individual</option>
-                            <option value="Familiar">Familiar</option>
-                        </select>
-
-                        {tipoPlano === 'Individual' ? '' : 
-                          <select
-                              id="planoFamiliar"
-                              value={planoFamiliar}
-                              onChange={handleTeste}
-                          >
-                              <option value="" disabled hidden>Plano Familiar</option>
-                              <option value="Dependente">Dependente</option>
-                              <option value="Responsavel">Responsável</option>
-                          </select> 
-                        }
-
-                        <select
-                            id="tipoPacote"
-                            value={tipoPacote}
-                            onChange={handleTipoPacoteChange}
-                        >
-                            <option value="" disabled hidden>Tipo do Pacote</option>
-                            <option value="Mensal">Mensal</option>
-                            <option value="Sessões">Sessões</option>
-                        </select>
-                    </div>
-
                     {listOpen || tipoPacote === 'Sessões' ? <></> : 
                       
                         <DatePicker
@@ -295,14 +224,12 @@ export default function ClientEdit({ id }: Props){
                                      
                     }
 
-                    {planoFamiliar === 'Dependente' ? <></>: 
-
                       <input
                         placeholder="Valor plano"
                         value={valorMask}
                         onChange={handleValorChange}
                       />
-                    }                    
+                                    
 
                     <input 
                         type="number"
