@@ -132,8 +132,8 @@ export default function ClientList({ clients }: ClientProps) {
                                 <th className={styles.tableCell}>Nome</th>
                                 <th className={styles.tableCell}>Vencimento</th>
                                 <th className={styles.tableCellDisable}>Telefone</th>
-                                <th className={styles.tableCellDisable}>Sessões</th>
-                                <th className={styles.tableCellDisable}>Qtd. de sessões</th>
+                                <th className={styles.tableCellDisable}>Consultas</th>
+                                <th className={styles.tableCellDisable}>Qtd. de consultas</th>
                                 <th className={styles.tableCellDisable}>Valor Plano</th>
                                 <th className={styles.tableCell}>Situação</th>                                
                                 <th className={styles.tableCell}>Ações</th>

@@ -65,7 +65,7 @@ export default function AgendaList({ clients }: ClientProps) {
         };
 
         fetchData(); 
-    }, [atrasoList]);
+    }, []);
 
 
     useEffect(() => {
@@ -73,7 +73,7 @@ export default function AgendaList({ clients }: ClientProps) {
 
     useEffect(() => {
         fetchRelatorio(); 
-    }, [relatorioList]); 
+    }, []); 
 
     const fetchRelatorio = async () => {
         try {
@@ -93,15 +93,15 @@ export default function AgendaList({ clients }: ClientProps) {
 
     const formatDate = (date: string) => {
         try {
-            const [day, month, year] = date.split('/');
-            const formattedDate = `${day.padStart(2, '0')} de ${getMonthName(month)} de ${year}`;
-            //console.log('Data formatada:', formattedDate);
+            const formattedDate = DateTime.fromFormat(date, "dd/MM/yyyy")
+                .setLocale('pt-BR')
+                .toFormat("dd 'de' MMMM 'de' yyyy");
             return formattedDate;
-        } catch (error) {
-            //console.error('Erro ao formatar data:', error);
+        } catch {
             return 'Data inválida';
         }
     };
+    
     
     const getMonthName = (month: string) => {
         const months = [
@@ -169,7 +169,7 @@ export default function AgendaList({ clients }: ClientProps) {
                 <main className={styles.container}>
 
                     <div className={styles.containerHeader}>
-                        <h1><FaList size={25} color="#3FBAC2"/> Próximas sessões</h1>
+                        <h1><FaList size={25} color="#3FBAC2"/> Próximas consultas</h1>
                         <button>
                             <FiRefreshCcw size={25} color="#3FBAC2" />
                         </button>

@@ -34,6 +34,7 @@
     "react-dom": "18.2.0",
     "react-icons": "^4.9.0",
     "react-input-mask": "^2.0.4",
+    "react-input-mask-next": "^3.0.0-alpha.12",
     "react-modal": "^3.16.1",
     "react-number-format": "^5.3.1",
     "react-toastify": "^9.1.3",

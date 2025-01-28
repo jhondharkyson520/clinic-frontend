@@ -6,14 +6,14 @@ import { canSSRAuth } from "@/utils/canSSRAuth";
 import { FormEvent, useEffect, useRef, useState } from "react";
 import { toast } from "react-toastify";
 import { setupAPIClient } from "@/services/api";
-import InputMask from 'react-input-mask';
+import InputMask from 'react-input-mask-next';
 import { DateTime } from 'luxon';
 import { useListOpen } from "@/providers/ListOpenContext";
 import ptBR from 'date-fns/locale/pt-BR';
-import DatePicker from 'react-datepicker';
+import DatePicker, { registerLocale } from 'react-datepicker';
 import router from "next/router";
 
-
+registerLocale("ptBR", ptBR);
 
 export default function NewClient(){
 
@@ -31,23 +31,15 @@ export default function NewClient(){
     const [situacao, setSituacao] = useState(true);
     const [camposFaltando, setCamposFaltando] = useState<string[]>([]);
 
-
-  
-
-
-    const maskMoney = (value: string) => {
-      
+    const maskMoney = (value: string) => {      
       const numericValue = value.replace(/\D/g, '');
       const formattedValue = numericValue.replace(/(\d)(\d{2})$/, '$1.$2');
       const valueWithDot = formattedValue.replace(/(?=(\d{3})+(\D))\B/g, '');
-      return `R$ ${valueWithDot}`;
-      
+      return `R$ ${valueWithDot}`;      
     };
   
     const handleValorChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const rawValue = e.target.value;       
-       
- 
+        const rawValue = e.target.value;      
         const numericValue = rawValue.replace(/[^\d,.]/g, '');  
         const valueWithDot = numericValue.replace(/,/g, '.');
         const formattedValueWithSymbol = maskMoney(valueWithDot);  
@@ -57,10 +49,6 @@ export default function NewClient(){
         setValorMask(formattedValueWithSymbol);                   
     };     
       
-    useEffect(() => {
-      console.log('situacao3:', situacao);
-    }, [situacao]);
-
     async function handleRegister(event: FormEvent) {
         event.preventDefault();
 
@@ -118,11 +106,7 @@ export default function NewClient(){
             toast.error('Erro ao cadastrar');
           }
         }
-
-         
-
-        setCamposFaltando([]);
-    
+        setCamposFaltando([]);    
         setName('');
         setEmail('');
         setCpf('');
@@ -133,28 +117,19 @@ export default function NewClient(){
         setQuantidade('');
     }
 
-    const { listOpen } = useListOpen();
-
+    const {listOpen} = useListOpen();
     const [selectedDate, setSelectedDate] = useState<Date | null>(new Date());
     const [isDatePickerOpen, setDatePickerOpen] = useState(false);
-
     const handleDateChange = (date: Date | null) => {
       setSelectedDate(date);
     };
 
-    useEffect(() => {
-      console.log('ConsultEasy');
-      
-    }, [selectedDate]);
-    console.log(selectedDate);
 
     useEffect(() => {
-      console.log(selectedDate);
-    
       const isBeforeOrEqualToday = selectedDate && selectedDate <= new Date();
-      console.log('isBeforeOrEqualToday:', isBeforeOrEqualToday);
+      //console.log('isBeforeOrEqualToday:', isBeforeOrEqualToday);
       setSituacao((prevState) => !isBeforeOrEqualToday);
-      console.log('situacao3:', !isBeforeOrEqualToday);
+      //console.log('situacao3:', !isBeforeOrEqualToday);
     }, [selectedDate]);    
     
     //const currentDate = new Date().toISOString().split('T')[0]; 
@@ -236,7 +211,7 @@ export default function NewClient(){
 
                     <input 
                         type="number"
-                        placeholder="Quantidade de sessões"
+                        placeholder="Quantidade de consultas"
                         value={quantidade}
                         onChange={(e) => setQuantidade(e.target.value)}  
                     />

@@ -16,7 +16,6 @@ interface Client {
   valorPlano: string;
   valorAberto: string;
   situacao: boolean;
-  planoFamiliar: string;
 }
 
 interface Caixa {
@@ -211,7 +210,6 @@ export default function Caixa() {
         valorPlano: '0.00',
         valorAberto: '0.00',
         situacao: true,
-        planoFamiliar: null || ''
       });
     } catch (error) {
       //console.error('Erro ao realizar o lançamento:', error);
@@ -273,7 +271,6 @@ export default function Caixa() {
                 >
                   <option value="">Selecione o cliente</option>
                   {clients
-                    .filter(client => client.planoFamiliar !== 'Dependente')
                     .sort((a, b) => a.name.localeCompare(b.name))
                     .map((client) => (
                       <option key={client.id} value={client.id}>

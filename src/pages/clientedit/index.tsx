@@ -6,7 +6,7 @@ import { canSSRAuth } from "@/utils/canSSRAuth";
 import { FormEvent, useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import { setupAPIClient } from "@/services/api";
-import InputMask from 'react-input-mask';
+import InputMask from 'react-input-mask-next';
 import { useRouter } from "next/router";
 import DatePicker, { registerLocale } from 'react-datepicker';
 import { useListOpen } from "@/providers/ListOpenContext";
@@ -36,7 +36,8 @@ export default function ClientEdit({ id }: Props){
     
     useEffect(() => {      
       const clientId = router.query.id as string;
-      setIdClient(clientId);
+      if(!clientId) return;
+      //setIdClient(clientId);
       //console.log(clientId); 
       const fetchClientData = async () => {
         try {
@@ -144,7 +145,7 @@ export default function ClientEdit({ id }: Props){
     return(
         <>
         <Head>
-            <title>Novo Cliente - SGCP</title>
+            <title>Editar cliente - ConsultEasy</title>
         </Head>
         <div>
             <Header/>
@@ -220,7 +221,7 @@ export default function ClientEdit({ id }: Props){
 
                     <input 
                         type="number"
-                        placeholder="Quantidade de sessões"
+                        placeholder="Quantidade de consultas"
                         value={quantidade}
                         onChange={(e) => setQuantidade(e.target.value)}  
                     />
