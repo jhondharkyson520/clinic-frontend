@@ -3,15 +3,16 @@ import Head from "next/head";
 import { Header } from "@/components/Header";
 import styles from './styles.module.scss';
 import { canSSRAuth } from "@/utils/canSSRAuth";
-import { FormEvent, InputHTMLAttributes, ReactHTMLElement, useEffect, useRef, useState } from "react";
+import { FormEvent, useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import { setupAPIClient } from "@/services/api";
 import InputMask from 'react-input-mask';
-import { DateTime } from 'luxon';
 import { useRouter } from "next/router";
-import ptBR from 'date-fns/locale/pt-BR';
-import DatePicker from 'react-datepicker';
+import DatePicker, { registerLocale } from 'react-datepicker';
 import { useListOpen } from "@/providers/ListOpenContext";
+import ptBR from "date-fns/locale/pt-BR";
+
+registerLocale("ptBR", ptBR);
 
 interface Props {
   id: string;
@@ -29,17 +30,14 @@ export default function ClientEdit({ id }: Props){
     const [valor, setValor] = useState('');
     const [valorMask, setValorMask] = useState('');
     const [quantidade, setQuantidade] = useState('');
-    const [tipoPacote, setTipoPacote] = useState('Mensal');
     const [situacao, setSituacao] = useState(false);
     const router = useRouter();
 
     
-    useEffect(() => {
-      
+    useEffect(() => {      
       const clientId = router.query.id as string;
       setIdClient(clientId);
-      //console.log(clientId);     
-  
+      //console.log(clientId); 
       const fetchClientData = async () => {
         try {
           const apiClient = setupAPIClient();
@@ -53,48 +51,44 @@ export default function ClientEdit({ id }: Props){
           setTelefone(clientData.telefone);
           setEndereco(clientData.endereco);
           setDataV(clientData.dataVencimento);
-          setValorMask(clientData.valorPlano);
+          if (clientData.dataVencimento) {
+            setSelectedDate(new Date(clientData.dataVencimento));
+          }
+          setValorMask(clientData.valorPlano.toString());
+          setValor(clientData.valorPlano.toString());
           setQuantidade(clientData.quantidadeSessoes);
           setSituacao(clientData.situacao);
           
         } catch (error) {
-          toast.error('Erro ao buscar dados do cliente');        
-          
+          toast.error('Erro ao buscar dados do cliente');          
         }
-      };
-  
+      };  
       fetchClientData();
     }, [router.query.id]);
 
 
     const maskMoney = (value: string) => {
-      
       const numericValue = value.replace(/\D/g, '');
-      const formattedValue = numericValue.replace(/(\d)(\d{2})$/, '$1.$2');
-      const valueWithDot = formattedValue.replace(/(?=(\d{3})+(\D))\B/g, '');
-      return `R$ ${valueWithDot}`;
-      
-    };
+      if (numericValue.length <= 2) {
+        return `R$ ${numericValue.padStart(3, '0').replace(/(\d)(\d{2})$/, '$1,$2')}`;
+      }
+      const formattedValue = numericValue.replace(/(\d)(\d{2})$/, '$1,$2').replace(/(?=(\d{3})+(\D))\B/g, '.');
+      return `R$ ${formattedValue}`;
+    };   
   
-   const handleValorChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const rawValue = e.target.value;       
-       
- 
+    const handleValorChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const rawValue = e.target.value;  
         const numericValue = rawValue.replace(/[^\d,.]/g, '');  
         const valueWithDot = numericValue.replace(/,/g, '.');
         const formattedValueWithSymbol = maskMoney(valueWithDot);  
         const formattedValue = formattedValueWithSymbol.substring(2);
-
         setValor(formattedValue); 
-        setValorMask(formattedValueWithSymbol);  
-
-      };   
+        setValorMask(formattedValueWithSymbol);
+    };   
 
     async function handleUpdate(event: FormEvent) {
-      event.preventDefault();
-          
+      event.preventDefault();          
       const camposFaltando: string[] = [];
-
       if (name === '') camposFaltando.push('Nome');
       if (email === '') camposFaltando.push('Email');
       if (cpf === '') camposFaltando.push('CPF');
@@ -109,30 +103,26 @@ export default function ClientEdit({ id }: Props){
         return;
       }
     
-      try {
-        
-        const dataVencimentoFormatted = selectedDate ? selectedDate.toLocaleDateString('pt-BR') : null;
-        
-          const requestData = {
-            id: idClient, 
-            name,
-            email,
-            cpf,
-            telefone,
-            endereco,
-            dataVencimento: dataVencimentoFormatted, 
-            valorPlano: parseFloat(valor),
-            quantidadeSessoes: parseInt(quantidade, 10),
-            situacao,
-          };
-    
+      try {        
+        const dataVencimentoFormatted = selectedDate ? selectedDate.toLocaleDateString('pt-BR') : null;        
+        const requestData = {
+          id: idClient, 
+          name,
+          email,
+          cpf,
+          telefone,
+          endereco,
+          dataVencimento: dataVencimentoFormatted, 
+          valorPlano: parseFloat(valor),
+          quantidadeSessoes: parseInt(quantidade, 10),
+          situacao,
+        };    
         const apiClient = setupAPIClient();
         const response = await apiClient.put(`/client/update/${idClient}`, requestData); 
         toast.success('Cliente atualizado com sucesso');
         router.push('/clientlist');
-
       } catch (error) {
-        console.log('Erro ao atualizar cliente:', error);
+        //console.log('Erro ao atualizar cliente:', error);
         toast.error('Erro ao atualizar cliente');
       }
     }
@@ -147,13 +137,10 @@ export default function ClientEdit({ id }: Props){
     useEffect(() => {
       setValor(valorMask);
     }, [selectedDate]);
-    console.log(selectedDate);
-    
-
+    //console.log('teste', maskMoney(valor));
     const { listOpen } = useListOpen();
-  
-
     
+
     return(
         <>
         <Head>
@@ -203,7 +190,7 @@ export default function ClientEdit({ id }: Props){
                         onChange={(e) => setEndereco(e.target.value)}  
                     />
 
-                    {listOpen || tipoPacote === 'Sessões' ? <></> : 
+                    {listOpen ? <></> : 
                       
                         <DatePicker
                           selected={selectedDate}
