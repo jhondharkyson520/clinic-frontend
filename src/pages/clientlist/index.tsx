@@ -4,14 +4,11 @@ import { Header } from "../..//components/Header";
 import styles from './styles.module.scss';
 import { canSSRAuth } from "../..//utils/canSSRAuth";
 import { FiRefreshCcw, FiEdit2, FiSearch } from "react-icons/fi";
-import { RiDeleteBin6Line } from "react-icons/ri";
 import { setupAPIClient } from "@/services/api";
 import { useEffect, useState } from "react";
 import ClientEdit from "../clientedit";
-import Link from "next/link";
 import router from "next/router";
 import { GrDisabledOutline, GrStatusDisabledSmall } from "react-icons/gr";
-
 
 type ListProps = {
     id: string;
@@ -25,46 +22,34 @@ type ListProps = {
     sessoesContador: number;
 }
 
-
 interface ClientProps {
     clients: ListProps[];
 }
 
-
-export default function ClientList({ clients }: ClientProps) {
-
+export default function ClientList({clients}: ClientProps) {
     const [clientList, setClientList] = useState(clients || []);
     const [searchTerm, setSearchTerm] = useState('');
-    const [selectedClientId, setSelectedClientId] = useState<string | null>(null);
-
-   
+    const [selectedClientId, setSelectedClientId] = useState<string | null>(null);   
     const formatDate = (date:any) => {
         return new Date(date).toLocaleDateString("pt-BR");
-    };
-  
+    };  
 
     function handleOpenEdit(id: string) {
         router.push(`/clientedit?id=${id}`);
-      }
-      
+    }      
 
-    const handleDelete = async (id: string) => {
-        
+    const handleDelete = async (id: string) => {        
         try {
-
           const apiClient = setupAPIClient(id);
-          await apiClient.delete(`/client/${id}`);
-    
+          await apiClient.delete(`/client/${id}`);    
           const updatedClientList = clientList.filter((client) => client.id !== id);
           setClientList(updatedClientList);
         } catch (error) {
-          console.error("Erro ao excluir o cliente:", error);
-          
+          console.error("Erro ao excluir o cliente:", error);          
         }
+    };
 
-      };
-
-      useEffect(() => {
+    useEffect(() => {
         async function fetchData() {
             try {
                 const apiClient = setupAPIClient();
@@ -78,11 +63,10 @@ export default function ClientList({ clients }: ClientProps) {
         fetchData();
     }, []);
 
-      const renderStatus = (client: any) => {
+    const renderStatus = (client: any) => {
         if (client.tipoPlano === 'Desativado') {
           return <span className={styles.dependenteText}>Desativado</span>;
-        }
-      
+        }      
         if (client.planoFamiliar === 'Dependente') {
           return <span className={styles.dependenteText}>Dependente</span>;
         }
@@ -92,9 +76,7 @@ export default function ClientList({ clients }: ClientProps) {
         ) : (
           <span className={styles.vencidaText}>Vencida</span>
         );
-      };
-      
-      
+    };      
 
     return (
         <>
@@ -185,8 +167,7 @@ export default function ClientList({ clients }: ClientProps) {
                                             >
                                             Editar
                                             <FiEdit2 size={17} color="#3FFFA3" />
-                                            </button>
-                                        
+                                            </button>                                        
 
                                             <button 
                                             className={styles.buttonDelete } 

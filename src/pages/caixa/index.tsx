@@ -17,7 +17,6 @@ interface Client {
   valorAberto: string;
   situacao: boolean;
 }
-
 interface Caixa {
   id: string;
   valorPlano: string;
@@ -27,7 +26,6 @@ interface Caixa {
 }
 
 export default function Caixa() {
-
   const [clients, setClients] = useState<Client[]>([]);
   const [caixa, setCaixa] = useState<Caixa[]>([]);
   const [selectedClientId, setSelectedClientId] = useState("");
@@ -35,25 +33,7 @@ export default function Caixa() {
   const [valorMask, setValorMask] = useState('');
   const [valor, setValor] = useState('');
   const [valorEmAberto, setValorEmAberto] = useState('R$ 0,00');  
-  const [valorPlano, setValorPlano] = useState<Number>();
-
-   
-  
-
-
- 
-
-
-  const getSaldoStatus = (valorAberto: string) => {
-    const saldo = parseFloat(valorAberto);
-    if (saldo > 0) {
-      return { status: 'Saldo positivo', situacao: true };
-    } else if (saldo < 0) {
-      return { status: 'Saldo devedor', situacao: false };
-    }
-    return { status: '', situacao: false };
-  };
-  
+  const [valorPlano, setValorPlano] = useState<Number>();  
   
   const calcularValorEmAberto = async (clientId: string) => {
     try {
@@ -63,34 +43,27 @@ export default function Caixa() {
       
       if (latestCaixa) {
         let valorAberto = parseFloat(latestCaixa.valorAberto);
-  
-        
-        setValorEmAberto(`R$ ${valorAberto.toFixed(2)}`);       
-            
-            const responseClient = await apiClient.get(`/client/detail/${clientId}`);
-            const clientDetails = responseClient.data;
-            const situacaoCliente = clientDetails.situacao;         
-        
+        setValorEmAberto(`R$ ${valorAberto.toFixed(2)}`);  
+        const responseClient = await apiClient.get(`/client/detail/${clientId}`);
+        const clientDetails = responseClient.data;
+        const situacaoCliente = clientDetails.situacao;
         setSelectedClient({ ...selectedClient!,situacao: situacaoCliente, id: clientId, valorPlano: latestCaixa.valorPlano });
       } else {
         setValorEmAberto('R$ 0.00');
       }
+
     } catch (error) {
       toast.error("Erro ao buscar saldo do cliente!");
-      //console.error("Erro ao buscar o valor em aberto:", error);
     }
-  };
-  
+  };  
 
   const fetchClients = async () => {
     try {
       const apiClient = setupAPIClient();
       const response = await apiClient.get("/clientlist");
-      //console.log("Dados dos clientes:", response.data);
       setClients(response.data);
     } catch (error) {
       toast.error('Erro ao buscar clientes cadastrados!');
-      //console.error("Erro ao buscar clientes:", error);
     }
   };
 
@@ -98,57 +71,34 @@ export default function Caixa() {
     try {
       const apiClient = setupAPIClient();
       const response = await apiClient.get("/caixalist");
-
       setCaixa(response.data);
     } catch (error) {
       toast.error('Erro ao buscar lançamentos!');
-      //console.error("Erro ao buscar lançamentos:", error);
     }
   };
-
-  
-  
   
   const fetchClientDetails = async (clientId: string) => {
     try {
       const apiClient = setupAPIClient();
       const response = await apiClient.get(`/client/detail/${clientId}`);
       const clientDetails = response.data;
-
-      //console.log("Detalhes do cliente:", clientDetails);
-
       const valorAberto = parseFloat(clientDetails.valorAberto);
-      const valorPlanoFloat = parseFloat(clientDetails.valorPlano); // Convertendo para float
+      const valorPlanoFloat = parseFloat(clientDetails.valorPlano);
       const situacaoCliente = clientDetails.situacao;
-      
-      
-
-      setSelectedClient({ ...clientDetails, situacao: situacaoCliente, valorPlano: valorPlanoFloat.toFixed(2) }); // Aplicando a formatação
-
-      //console.log("valor plano fim ", valorPlanoFloat.toFixed(2));
-
+      setSelectedClient({ ...clientDetails, situacao: situacaoCliente, valorPlano: valorPlanoFloat.toFixed(2) });
       setValorPlano(valorPlanoFloat);
-
-
-    
-      
-
       calcularValorEmAberto(clientId);
     } catch (error) {
       toast.error('Erro ao buscar detalhes do cliente!');
-      //console.error("Erro ao buscar detalhes do cliente:", error);
     }
   };
   
-
   useEffect(() => {
     fetchCaixa();
-  }, []);
-  
+  }, []);  
   useEffect(() => {
     fetchClients();
-  }, []);
-  
+  }, []);  
   useEffect(() => {
     if (selectedClientId) {
       fetchClientDetails(selectedClientId);
@@ -157,10 +107,8 @@ export default function Caixa() {
   
   useEffect(() => {
     if (selectedClient) {
-      //console.log("valor plano fim2 ", selectedClient.valorPlano);
     }
-  }, [selectedClient]); 
-  
+  }, [selectedClient]);   
 
   const maskMoney = (value: string) => {
     const numericValue = value.replace(/\D/g, '');
@@ -168,38 +116,29 @@ export default function Caixa() {
     const valueWithDot = formattedValue.replace(/(?=(\d{3})+(\D))\B/g, '');
     return `R$ ${valueWithDot}`;
   };
-
   const handleValorChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const rawValue = e.target.value;
     const numericValue = rawValue.replace(/[^\d,.]/g, '');
     const valueWithDot = numericValue.replace(/,/g, '.');
     const formattedValueWithSymbol = maskMoney(valueWithDot);
     const formattedValue = formattedValueWithSymbol.substring(2);
-
     setValor(formattedValue);
     setValorMask(formattedValueWithSymbol);
   };
-
   const handleLancamento = async () => {
     try {
       if (!selectedClientId || valor === '') {
-        //console.error('Cliente ou valor não selecionado');
         toast.warning('Preencha todos os campos!');
         return;
       }
 
-      
-      const apiClient = setupAPIClient();
-
-      
-  
+      const apiClient = setupAPIClient(); 
       await apiClient.post('/lancamento', {
         client_id: selectedClientId,
         valorPago: parseFloat(valor),
       });
+      toast.success('Lançamento bem-sucedido!');
 
-      toast.success('Lançamento bem-sucedido!'); 
-      
       setSelectedClientId('');
       setSelectedClient(null);
       setValorEmAberto('');
@@ -212,14 +151,10 @@ export default function Caixa() {
         situacao: true,
       });
     } catch (error) {
-      //console.error('Erro ao realizar o lançamento:', error);
       toast.error('Erro ao realizar o lançamento');
     }
   };
   
-  
-  
-
   const formatarDataAtual = () => {
     const dataAtual = new Date();
     const dia = String(dataAtual.getDate()).padStart(2, '0');
@@ -227,20 +162,13 @@ export default function Caixa() {
     const ano = dataAtual.getFullYear();
     return `${dia}/${mes}/${ano}`;
   };
-
-
-  const textoSituacao = () => {
-    
-    
+  const textoSituacao = () => {    
     if(selectedClient?.situacao == true){
       return 'Pago';
     }else{
       return 'Vencido'
     }
-  };
-
-  
-  
+  }; 
 
   return (
     <>
@@ -278,7 +206,7 @@ export default function Caixa() {
                       </option>
                     ))}
                 </select>
-                              </div>
+              </div>
 
               <div className={styles.itemsForm}>
                 <MdDateRange size={25} className={styles.iconsInput} />
@@ -330,9 +258,7 @@ export default function Caixa() {
                   onChange={handleValorChange}
                   className={styles.inputContainer}
                 />
-              </div>
-
-              
+              </div>              
 
               <button className={styles.buttonConfirm} type="button" onClick={handleLancamento}>
                 Efetuar lançamento

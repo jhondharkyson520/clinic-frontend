@@ -1,9 +1,9 @@
-import FullCalendar from '@fullcalendar/react'
-import dayGridPlugin from '@fullcalendar/daygrid'
+import FullCalendar from '@fullcalendar/react';
+import dayGridPlugin from '@fullcalendar/daygrid';
 
 const events = [
-  { title: 'Meeting', start: new Date() }
-]
+  {title: 'Meeting', start: new Date()}
+];
 
 export function CalendarComponent() {
   return (
@@ -20,7 +20,6 @@ export function CalendarComponent() {
   )
 }
 
-// a custom render function
 function renderEventContent(eventInfo:any) {
   return (
     <>

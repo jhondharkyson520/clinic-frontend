@@ -28,7 +28,6 @@ export function canSSRAuth<P extends { [key: string]: any }>(fn: GetServerSidePr
           }
         }
       }
-
       throw err;
     }
   }

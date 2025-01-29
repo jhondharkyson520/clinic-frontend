@@ -33,8 +33,7 @@ export default function Signup() {
     setName('');
     setEmail('');
     setPassword('');
-  }
-  
+  }  
  
   return (
     <>

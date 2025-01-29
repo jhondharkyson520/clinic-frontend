@@ -6,7 +6,6 @@ import { canSSRAuth } from "../..//utils/canSSRAuth";
 import { useState, useEffect } from "react";
 import { setupAPIClient } from "@/services/api";
 import { useRouter } from "next/router";
-import InputMask from 'react-input-mask';
 import { DateTime } from 'luxon';
 import { HiOutlineCalendar, HiOutlineClock, HiUsers } from "react-icons/hi2";
 import FullCalendar from '@fullcalendar/react'
@@ -20,16 +19,12 @@ import ptBR from 'date-fns/locale/pt-BR';
 import { toast } from "react-toastify";
 import { useListOpen } from "@/providers/ListOpenContext";
 
-
-
-
 interface Agenda{
   id: string;
   name: string;
   dataConsulta: Date;
   horarioConsulta: Date;
 }
-
 interface Client {
   id: string;
   name: string;
@@ -45,9 +40,6 @@ export default function Agenda() {
   const [events, setEvents] = useState<any[]>([]);
   const router = useRouter();
   const [isDatePickerOpen, setDatePickerOpen] = useState(false);
-
-  //console.log(events);
-
   const handleViewChange = (view: string) => {
     setCurrentView(view);
   };
@@ -55,7 +47,6 @@ export default function Agenda() {
   useEffect(() => {
     fetchClients();
   }, []);
-
   useEffect(() => {
     fetchAgendaList();
   }, [selectedDate, selectedTime]);
@@ -67,32 +58,23 @@ export default function Agenda() {
       setClients(response.data);
     } catch (error) {
       toast.error('Erro ao buscar clientes');
-      //console.error("Erro ao buscar clientes:", error);
     }
   };
 
   const fetchAgendaList = async () => {
     try {
       const apiClient = setupAPIClient();
-      const response = await apiClient.get("/agendalist");
-  
-      //console.log("Resposta do servidor:", response.data);      
-  
+      const response = await apiClient.get("/agendalist");  
       const formattedEvents = response.data.map((agendaItem: any) => {
-        //console.log("Data e Hora Consulta:", agendaItem.dataConsulta, agendaItem.horarioConsulta);
-
         const dataConsulta = DateTime.fromFormat(agendaItem.dataConsulta, 'dd/MM/yyyy');
-
-        const [hour, minute] = agendaItem.horarioConsulta.split(':');
-  
+        const [hour, minute] = agendaItem.horarioConsulta.split(':');  
         const horarioConsulta = new Date(
           dataConsulta.year,
           dataConsulta.month - 1, 
           dataConsulta.day,
           parseInt(hour),
           parseInt(minute)
-        );
-  
+        );  
         const horaFormatada = `${hour}:${minute.padStart(2, '0')}`;
         const title = `${horaFormatada}  -  ${agendaItem.client.name}`;
   
@@ -101,60 +83,42 @@ export default function Agenda() {
           description: horaFormatada,
           start: horarioConsulta.toISOString(),
         };
-      });
-  
-      //console.log("Eventos formatados:", formattedEvents);
-  
+      });  
       setEvents(formattedEvents);
       setAgenda(response.data);
     } catch (error) {
       toast.error('Erro ao buscar agendamentos');
-      //console.error("Erro ao buscar agendas:", error);
     }
   };
   
   const handleDateChange = (date: Date | null) => {
     setSelectedDate(date);
   };
-
   const handleAgendamento = async (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-  
+    event.preventDefault();  
     try {
-      const apiClient = setupAPIClient();
-  
+      const apiClient = setupAPIClient();  
       if (!selectedClientId) {
-        //console.error('Selecione um cliente antes de agendar.');
         toast.error('Selecione um cliente antes de agendar!');
         return;
-      }
-      
+      }     
 
       const selectedDateFormatted = selectedDate ? selectedDate.toLocaleDateString('pt-BR') : '';
       const selectedTimeWithoutColon = selectedTime.replace(':', '');
-
-      const dateTimeString = `${selectedDateFormatted} ${selectedTimeWithoutColon}`;
-      //console.log('String de data e hora:', `${selectedDateFormatted} ${selectedTimeWithoutColon}`);
-
       const dataHoraLuxon = DateTime.fromFormat(
         `${selectedDateFormatted} ${selectedTimeWithoutColon}`, 
         'dd/MM/yyyy HHmm', 
         { zone: 'America/Sao_Paulo' }
       );
-
       const horaAtual = DateTime.now().setZone('America/Sao_Paulo');
-
       const diff = dataHoraLuxon.diff(horaAtual, 'minutes');
       const diffInMinutes = diff?.toObject().minutes;
-
       if (diffInMinutes !== undefined && diffInMinutes <= 0) {
-        //console.log('Não é possível fazer agendamentos passados ou na mesma data e hora atual');
         toast.error('Não é possível fazer agendamentos passados ou na mesma data e hora atual!');
         return;
       }         
 
      const formattedDate = selectedDate ? selectedDate.toLocaleDateString('pt-BR') : '';
-
      const agendamentoData = {
       dataConsulta: formattedDate,
       horarioConsulta: selectedTime,
@@ -162,23 +126,17 @@ export default function Agenda() {
       sessoesContador: 1,
     };
 
-      const response = await apiClient.post("/agenda", agendamentoData);
-
-      setSelectedTime('');
-      setSelectedClientId('');
-      setSelectedDate(null);
-  
-      //console.log("Agendamento bem-sucedido:", agendamentoData, response.data, 'teste');
-      toast.success('Horário marcado com sucesso!');
-    } catch (error) {
-      //console.error("Erro ao agendar:", error);
-      toast.error('Já existe um agendamento para a mesma data e horário.');
-      setSelectedTime('');      
-      setSelectedClientId('');
-      
-      
-    }
-  };
+    const response = await apiClient.post("/agenda", agendamentoData);
+    setSelectedTime('');
+    setSelectedClientId('');
+    setSelectedDate(null);
+    toast.success('Horário marcado com sucesso!');
+  } catch (error) {
+    toast.error('Já existe um agendamento para a mesma data e horário.');
+    setSelectedTime('');      
+    setSelectedClientId('');      
+  }
+};
 
   function getRandomColor() {
     const letters = '0123456789ABCDEF';
@@ -190,27 +148,23 @@ export default function Agenda() {
   }
 
   function renderEventContent(eventInfo:any) {
-    const { title } = eventInfo.event;
+    const { title } = eventInfo.event; 
+    const eventStyle: React.CSSProperties = {
+      padding: '8px',
+      backgroundColor: getRandomColor(), 
+      color: '#fff', 
+      borderRadius: '4px',
+      cursor: 'pointer',
+      display: 'flex'
+    };
 
- 
-  const eventStyle: React.CSSProperties = {
-    padding: '8px',
-    backgroundColor: getRandomColor(), 
-    color: '#fff', 
-    borderRadius: '4px',
-    cursor: 'pointer',
-    display: 'flex'
-  };
-
-  return (
-    <div style={eventStyle}>
-      <b>{title}</b>
-    </div>
-  );
+    return (
+      <div style={eventStyle}>
+        <b>{title}</b>
+      </div>
+    );
   }
-
-  const { listOpen } = useListOpen();
-
+  const {listOpen} = useListOpen();
   const handleTimeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     let value = e.target.value.replace(/\D/g, "");
     value = value.replace(/(\d{2})(\d)/, "$1:$2");
@@ -219,8 +173,7 @@ export default function Agenda() {
   };
 
   return (
-    <>
-    
+    <>    
       <Head>
         <title>Agenda - ConsultEasy</title>
       </Head>
@@ -251,8 +204,7 @@ export default function Agenda() {
                 </select>
             </div>
               
-            <div className={styles.inputDateHour}>
-              
+            <div className={styles.inputDateHour}>              
               
                 <div className={styles.datePickerContainer}>
                 <HiOutlineCalendar size={25} className={styles.iconsInputCalendar}/>
@@ -270,9 +222,7 @@ export default function Agenda() {
                     open={isDatePickerOpen}
                     locale={ptBR}
                   />
-                </div>
-              
-                
+                </div>             
                 
               <HiOutlineClock size={25} className={styles.iconsInputClock}/>
                 <input
@@ -294,7 +244,6 @@ export default function Agenda() {
             <div className={styles.viewCalendar}>
             <div className={styles.viewButtons}>
 
-            
               <button
                 className={currentView === 'dayGridDay' ? styles.activeView : ''}
                 onClick={() => handleViewChange('dayGridDay')}

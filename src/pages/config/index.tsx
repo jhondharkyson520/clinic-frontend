@@ -4,7 +4,7 @@ import { Header } from "../../components/Header";
 import styles from './styles.module.scss';
 import { canSSRAuth } from "../../utils/canSSRAuth";
 import { FormEvent, useEffect, useState } from "react";
-import axios, { AxiosError } from "axios"; // Importe AxiosError para lidar com erros específicos do Axios
+import axios, { AxiosError } from "axios";
 import { HiUsers } from "react-icons/hi";
 import { MdEmail } from "react-icons/md";
 import { RiLockPasswordFill } from "react-icons/ri";
@@ -17,22 +17,16 @@ interface User {
 }
 
 export default function Config() { 
-
-
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
   async function handleSubmit(event: FormEvent) {
     event.preventDefault();
-    console.log("Form submitted:", name, email, password); // Adiciona um log dos dados submetidos
-
     const camposFaltando: string[] = [];
-
     if (name === '') camposFaltando.push('Nome');
     if (email === '') camposFaltando.push('Email');
-    if (password === '') camposFaltando.push('Senha');
- 
+    if (password === '') camposFaltando.push('Senha'); 
     if (camposFaltando.length > 0) {
       camposFaltando.forEach((campo) => {
         toast.warning(`O campo '${campo}' é obrigatório.`);
@@ -46,13 +40,10 @@ export default function Config() {
         email,
         password
       };
-
       const apiClient = setupAPIClient();
       const response = await apiClient.post('/users', requestData);
-
       toast.success('Usuário cadastrado com sucesso');
     } catch (err) {
-      console.error(err);
       if (err instanceof AxiosError && err.response?.status === 400) {
         toast.error('Email já cadastrado');
       } else {
@@ -80,22 +71,18 @@ export default function Config() {
         const response = await apiClient.get('/userlist');
         setUsers(response.data);
       } catch (error) {
-        console.error("Erro ao buscar usuários:", error);
         toast.error('Erro ao buscar usuários');
       }
     }
-
     fetchUsers();
   }, []);
 
   async function handleUpdate(event: FormEvent) {
     event.preventDefault();
-
     if (!selectedUser) {
       toast.error('Selecione um usuário.');
       return;
     }
-
     if (newPassword !== confirmNewPassword) {
       toast.error('As senhas não coincidem.');
       return;
@@ -106,21 +93,16 @@ export default function Config() {
         userId: selectedUser,
         newPassword
       };
-
       const apiClient = setupAPIClient();
       await apiClient.put(`/users/${selectedUser}/password`, requestData);
-
       toast.success('Senha alterada com sucesso');
     } catch (error) {
-      console.error("Erro ao alterar a senha:", error);
       toast.error('Erro ao alterar a senha');
-    }
-    
+    }    
     setSelectedUser('');
     setNewPassword('');
     setConfirmNewPassword('');
   }
-
 
   return (
     <>
@@ -174,8 +156,6 @@ export default function Config() {
               </button>
             </form>
 
-
-
            <form className={styles.formCaixa} onSubmit={handleUpdate}>
               <div className={styles.containerHeader}>
                 <h1>Alterar senha</h1>
@@ -222,7 +202,6 @@ export default function Config() {
               </button>
             </form>
 
-
           </div>
         </main>
       </div>
@@ -231,8 +210,7 @@ export default function Config() {
 }
 
 export const getServerSideProps = canSSRAuth(async (ctx) => {
-
   return {
       props: {}
   }
-})
+});

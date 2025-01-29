@@ -17,8 +17,7 @@ interface Props {
   id: string;
 }
 
-export default function ClientEdit({ id }: Props){
-  
+export default function ClientEdit({id}: Props) {  
     const [idClient, setIdClient] = useState('');
     const [name, setName] = useState('');
     const [email, setEmail] = useState('');
@@ -31,13 +30,10 @@ export default function ClientEdit({ id }: Props){
     const [quantidade, setQuantidade] = useState('');
     const [situacao, setSituacao] = useState(false);
     const router = useRouter();
-
     
     useEffect(() => {      
       const clientId = router.query.id as string;
       if(!clientId) return;
-      //setIdClient(clientId);
-      //console.log(clientId); 
       const fetchClientData = async () => {
         try {
           const apiClient = setupAPIClient();
@@ -65,7 +61,6 @@ export default function ClientEdit({ id }: Props){
       };  
       fetchClientData();
     }, [router.query.id]);
-
 
     const maskMoney = (value: string) => {
       const numericValue = value.replace(/\D/g, '');
@@ -122,14 +117,12 @@ export default function ClientEdit({ id }: Props){
         toast.success('Cliente atualizado com sucesso');
         router.push('/clientlist');
       } catch (error) {
-        //console.log('Erro ao atualizar cliente:', error);
         toast.error('Erro ao atualizar cliente');
       }
     }
 
     const [selectedDate, setSelectedDate] = useState<Date | null>(new Date());
     const [isDatePickerOpen, setDatePickerOpen] = useState(false);
-
     const handleDateChange = (date: Date | null) => {
       setSelectedDate(date);
     };
@@ -137,9 +130,8 @@ export default function ClientEdit({ id }: Props){
     useEffect(() => {
       setValor(valorMask);
     }, [selectedDate]);
-    //console.log('teste', maskMoney(valor));
-    const { listOpen } = useListOpen();
 
+    const { listOpen } = useListOpen();
     const handleCpfChange = (e: React.ChangeEvent<HTMLInputElement>) => {
       let value = e.target.value.replace(/\D/g, "");
       value = value.replace(/(\d{3})(\d)/, "$1.$2");
@@ -147,14 +139,12 @@ export default function ClientEdit({ id }: Props){
       value = value.replace(/(\d{3})(\d{2})$/, "$1-$2");
       setCpf(value);
     };
-
     const handlePhoneChange = (e: React.ChangeEvent<HTMLInputElement>) => {
       let value = e.target.value.replace(/\D/g, "");
       value = value.replace(/(\d{2})(\d)/, "($1) $2");
       value = value.replace(/(\d{4})(\d)/, "$1-$2");
       setTelefone(value);
-    };
-    
+    };    
 
     return(
         <>
@@ -168,8 +158,7 @@ export default function ClientEdit({ id }: Props){
                 <h1>Editar dados do Cliente</h1>
 
                 <form className={styles.form}  onSubmit={handleUpdate}>
-                      
-                    
+
                       <input 
                           type="text"
                           placeholder="Nome"

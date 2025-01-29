@@ -8,17 +8,14 @@ import { faBars, faTimes } from '@fortawesome/free-solid-svg-icons';
 import { useListOpen } from '@/providers/ListOpenContext';
 
 export function Header() {
-  const { signOut } = useContext(AuthContext);
-  const { listOpen, setListOpen } = useListOpen();
-
+  const {signOut} = useContext(AuthContext);
+  const {listOpen, setListOpen} = useListOpen();
   const toggleList = () => {
     setListOpen(!listOpen);
   };
-
   const closeList = () => {
     setListOpen(false);
   };
-
   const closeListAndNavigate = () => {
     closeList();
   };
@@ -29,11 +26,9 @@ export function Header() {
         <Link href="/dashboard">
           <img src="/logoHeader.svg" alt="logo" width={190} height={60} />
         </Link>
-
         <button className={styles.buttonBar} onClick={toggleList}>
           <FontAwesomeIcon className={styles.iconBars} icon={faBars} />
         </button>
-
         {listOpen && (
           <ul className={styles.list}>
             <button className={styles.buttonTimes} onClick={closeList}>
@@ -44,52 +39,43 @@ export function Header() {
                 Painel
               </a>
             </li>
-
             <li className={styles.lineLi}>
               <a className={styles.buttonH} href="/newclient" onClick={closeListAndNavigate}>
                 Cadastrar Clientes
               </a>
             </li>
-
             <li className={styles.lineLi}>
               <a className={styles.buttonH} href="/clientlist" onClick={closeListAndNavigate}>
                 Clientes
               </a>
             </li>
-
             <li className={styles.lineLi}>
               <a className={styles.buttonH} href="/agenda" onClick={closeListAndNavigate}>
                 Agenda
               </a>
             </li>
-
             <li className={styles.lineLi}>
               <a className={styles.buttonH} href="/caixa" onClick={closeListAndNavigate}>
                 Caixa
               </a>
             </li>
-
             <li className={styles.lineLi}>
               <a className={styles.buttonH} href="/config" onClick={closeListAndNavigate}>
                 Configurações
               </a>
             </li>
-
             <li className={styles.lineLi}>
               <a className={styles.buttonH} href="/" onClick={signOut}>
                 <FiLogOut size={24}/>
               </a>
-            </li>            
-            
+            </li>
           </ul>
         )}
       </div>
-
       <div className={styles.headerContent}>
         <Link href="/dashboard">
           <img src="/logoHeader.svg" alt="logo" width={190} height={60} />
         </Link>
-
         <nav className={styles.menuNav}>
           <Link href="/dashboard" className={styles.a}>
             Painel

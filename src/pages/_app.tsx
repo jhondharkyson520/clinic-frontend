@@ -5,7 +5,6 @@ import 'react-toastify/dist/ReactToastify.css';
 import { ToastContainer} from 'react-toastify';
 import { ListOpenProvider } from '@/providers/ListOpenContext';
 
-
 function MyApp({ Component, pageProps }: AppProps) {
   return (
     <AuthProvider>
@@ -14,9 +13,8 @@ function MyApp({ Component, pageProps }: AppProps) {
         <ToastContainer autoClose={3000}/>
       </ListOpenProvider>
        
-    </AuthProvider>
-    
+    </AuthProvider>    
   )
 }
 
-export default MyApp
+export default MyApp;

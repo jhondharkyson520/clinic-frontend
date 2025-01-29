@@ -13,8 +13,7 @@ import router from "next/router";
 
 registerLocale("ptBR", ptBR);
 
-export default function NewClient(){
-
+export default function NewClient() {
     const [name, setName] = useState('');
     const [email, setEmail] = useState('');
     const [cpf, setCpf] = useState('');
@@ -48,9 +47,8 @@ export default function NewClient(){
     };     
       
     async function handleRegister(event: FormEvent) {
-        event.preventDefault();
-
-        const camposFaltando: string[] = [];
+      event.preventDefault();
+      const camposFaltando: string[] = [];
 
       if (name === '') camposFaltando.push('Nome');
       if (email === '') camposFaltando.push('Email');
@@ -60,16 +58,13 @@ export default function NewClient(){
       if (quantidade === '') camposFaltando.push('Quantidade de Sessões');
 
       if (camposFaltando.length > 0) {
-
         camposFaltando.forEach((campo) => {
           toast.error(`O campo '${campo}' é obrigatório.`);
-        });
-
+      });
         
         return;
       }
 
-        
         try {
                     
           let situacaoPacote = true;
@@ -77,7 +72,6 @@ export default function NewClient(){
               const isBeforeOrEqualToday = selectedDate && selectedDate <= new Date();
               situacaoPacote = !isBeforeOrEqualToday;
           }
-          // Formatar a data de vencimento para enviar ao servidor
           const formattedDataVencimento = tipoPacote === 'Mensal' ? (selectedDate ? selectedDate.toLocaleDateString('pt-BR') : null) : null;      
           const requestData = {
             name,
@@ -89,15 +83,12 @@ export default function NewClient(){
             valorPlano: parseFloat(valor),
             quantidadeSessoes: parseInt(quantidade, 10),
             situacao: situacaoPacote,
-          };
-    
+          };    
           const apiClient = setupAPIClient();
           await apiClient.post('/client', requestData);          
-          router.push('/caixa');
-    
+          router.push('/caixa');    
           toast.success('Cliente cadastrado com sucesso');
         } catch (err) {
-          //console.error(err);
           if (err instanceof Error) {
             toast.error(err.message);
           } else {
@@ -115,22 +106,17 @@ export default function NewClient(){
         setQuantidade('');
     }
 
-    const {listOpen} = useListOpen();
-    const [selectedDate, setSelectedDate] = useState<Date | null>(new Date());
-    const [isDatePickerOpen, setDatePickerOpen] = useState(false);
-    const handleDateChange = (date: Date | null) => {
+      const {listOpen} = useListOpen();
+      const [selectedDate, setSelectedDate] = useState<Date | null>(new Date());
+      const [isDatePickerOpen, setDatePickerOpen] = useState(false);
+      const handleDateChange = (date: Date | null) => {
       setSelectedDate(date);
     };
 
-
     useEffect(() => {
       const isBeforeOrEqualToday = selectedDate && selectedDate <= new Date();
-      //console.log('isBeforeOrEqualToday:', isBeforeOrEqualToday);
       setSituacao((prevState) => !isBeforeOrEqualToday);
-      //console.log('situacao3:', !isBeforeOrEqualToday);
-    }, [selectedDate]);    
-    
-    //const currentDate = new Date().toISOString().split('T')[0];
+    }, [selectedDate]);
 
     const handleCpfChange = (e: React.ChangeEvent<HTMLInputElement>) => {
       let value = e.target.value.replace(/\D/g, "");
@@ -210,8 +196,7 @@ export default function NewClient(){
                         onBlur={() => setDatePickerOpen(false)}
                         open={isDatePickerOpen}
                         locale="ptBR"
-                      />
-                                   
+                      />                                   
                                       
                     {planoFamiliar === 'Dependente' ? <></>: 
 

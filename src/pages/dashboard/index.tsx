@@ -14,7 +14,6 @@ import { TbBrandCashapp } from "react-icons/tb";
 import { MdOutlinePayments } from "react-icons/md";
 import { DateTime } from "luxon";
 
-
 type AgendaItem = {
     id: string;
     name: string;
@@ -23,18 +22,15 @@ type AgendaItem = {
     sessoesContador: number;
     
 }
-
 interface ClientProps {
     clients: AgendaItem[];
 }
-
 interface RelatorioResponse {
     faturamentoMensal: number;
     faturamentoAnual: number;
     valoresAtrasados: number;
-  }
-
-  interface AtrasoItem {
+}
+interface AtrasoItem {
     client: {
         id: string;
         name: string;
@@ -46,11 +42,8 @@ interface RelatorioResponse {
 export default function AgendaList({ clients }: ClientProps) {
     const [clientList, setClientList] = useState(clients || []);
     const [searchTerm, setSearchTerm] = useState('');
-
     const [relatorioList, setRelatorioList] = useState<RelatorioResponse>();
     const [atrasoList, setAtrasoList] = useState<AtrasoItem[]>([]);
-
-
 
     useEffect(() => {
         const fetchData = async () => {
@@ -59,18 +52,13 @@ export default function AgendaList({ clients }: ClientProps) {
                 const response = await apiClient.get('/caixa/atrasados');
                 setAtrasoList(response.data);             
             } catch (error) {
-                //console.error('Erro ao buscar os dados:', error);
                 toast.error('Erro ao carregar Painel');
             }
         };
-
         fetchData(); 
-    }, []);
-
-
+    }, []);    
     useEffect(() => {
     }, [clientList]);
-
     useEffect(() => {
         fetchRelatorio(); 
     }, []); 
@@ -81,16 +69,9 @@ export default function AgendaList({ clients }: ClientProps) {
             const response = await apiClient.get<RelatorioResponse>('/caixa/relatorio'); 
             setRelatorioList(response.data);
         } catch (error) {
-            //console.error(error);
             toast.error('Erro ao buscar relatorio de caixa')
         }
     };
-
-   
-   
-
-    
-
     const formatDate = (date: string) => {
         try {
             const formattedDate = DateTime.fromFormat(date, "dd/MM/yyyy")
@@ -100,9 +81,7 @@ export default function AgendaList({ clients }: ClientProps) {
         } catch {
             return 'Data inválida';
         }
-    };
-    
-    
+    };    
     const getMonthName = (month: string) => {
         const months = [
             'janeiro', 'fevereiro', 'março', 'abril', 'maio', 'junho',
@@ -114,22 +93,16 @@ export default function AgendaList({ clients }: ClientProps) {
 
     function handleOpenCaixa() {
         router.push(`/caixa`);
-      }
+    }
     
     const handleDelete = async(id: string) => {
-        
-        
         try {
           const apiClient = setupAPIClient(); 
           await apiClient.delete(`/agenda/${id}`);
-          
-          //console.log("Agendamento excluído com sucesso:", id);
-          toast.success('Agendamento excluido com sucesso!');
-          
+          toast.success('Agendamento excluido com sucesso!');          
           const updatedClientList = clientList.filter((client) => client.id !== id);
           setClientList(updatedClientList);
         } catch (error) {
-          //console.error("Erro ao excluir agendamento:", error);
           toast.error('Erro ao excluir agendamento!')
         }
       };
@@ -138,26 +111,19 @@ export default function AgendaList({ clients }: ClientProps) {
         try {
             const apiClient = setupAPIClient(); 
             await apiClient.delete(`/agenda/${id}`);
-            
-            //console.log("Agendamento excluído com sucesso:", id);
-            toast.success('Agendamento excluido com sucesso!');
-            
+            toast.success('Agendamento excluido com sucesso!');            
             const updatedClientList = clientList.filter((client) => client.id !== id);
             setClientList(updatedClientList);
           } catch (error) {
-            //console.error("Erro ao excluir agendamento:", error);
             toast.error('Erro ao excluir agendamento!')
           }
         router.push(`/agenda`);
-      }
-      
+      }      
       const currentDateTime = DateTime.now();
       const formattedCurrentDateTime = currentDateTime.setLocale('pt-BR').toLocaleString(DateTime.DATETIME_MED);
 
       useEffect(() => {
     }, [formattedCurrentDateTime]);
-
-   // const colors = ['#06cf9d', '#24ffc8a2']; style={{ backgroundColor: colors[index % colors.length] }}
 
     return (
         <>
@@ -317,8 +283,7 @@ export default function AgendaList({ clients }: ClientProps) {
 
                         </div>
                     
-                    </div>
-                    
+                    </div>                    
 
                 </main>
             </div>
