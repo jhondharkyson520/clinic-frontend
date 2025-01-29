@@ -6,7 +6,6 @@ import { canSSRAuth } from "@/utils/canSSRAuth";
 import { FormEvent, useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import { setupAPIClient } from "@/services/api";
-import InputMask from 'react-input-mask-next';
 import { useRouter } from "next/router";
 import DatePicker, { registerLocale } from 'react-datepicker';
 import { useListOpen } from "@/providers/ListOpenContext";

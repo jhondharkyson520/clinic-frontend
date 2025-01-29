@@ -46,7 +46,7 @@ export default function Agenda() {
   const router = useRouter();
   const [isDatePickerOpen, setDatePickerOpen] = useState(false);
 
-  console.log(events);
+  //console.log(events);
 
   const handleViewChange = (view: string) => {
     setCurrentView(view);
@@ -117,10 +117,6 @@ export default function Agenda() {
     setSelectedDate(date);
   };
 
-  const handleTimeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setSelectedTime(e.target.value);
-  };
-
   const handleAgendamento = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
   
@@ -172,7 +168,7 @@ export default function Agenda() {
       setSelectedClientId('');
       setSelectedDate(null);
   
-      console.log("Agendamento bem-sucedido:", agendamentoData, response.data, 'teste');
+      //console.log("Agendamento bem-sucedido:", agendamentoData, response.data, 'teste');
       toast.success('Horário marcado com sucesso!');
     } catch (error) {
       //console.error("Erro ao agendar:", error);
@@ -214,6 +210,13 @@ export default function Agenda() {
   }
 
   const { listOpen } = useListOpen();
+
+  const handleTimeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    let value = e.target.value.replace(/\D/g, "");
+    value = value.replace(/(\d{2})(\d)/, "$1:$2");
+    value = value.slice(0, 5);
+    setSelectedTime(value);
+  };
 
   return (
     <>
@@ -272,8 +275,8 @@ export default function Agenda() {
                 
                 
               <HiOutlineClock size={25} className={styles.iconsInputClock}/>
-                <InputMask
-                  mask="99:99"
+                <input
+                  maxLength={5}
                   placeholder="Informe o horário"
                   value={selectedTime}
                   onChange={handleTimeChange}
