@@ -132,7 +132,22 @@ export default function NewClient(){
       //console.log('situacao3:', !isBeforeOrEqualToday);
     }, [selectedDate]);    
     
-    //const currentDate = new Date().toISOString().split('T')[0]; 
+    //const currentDate = new Date().toISOString().split('T')[0];
+
+    const handleCpfChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+      let value = e.target.value.replace(/\D/g, "");
+      value = value.replace(/(\d{3})(\d)/, "$1.$2");
+      value = value.replace(/(\d{3})(\d)/, "$1.$2");
+      value = value.replace(/(\d{3})(\d{2})$/, "$1-$2");
+      setCpf(value);
+    };
+
+    const handlePhoneChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+      let value = e.target.value.replace(/\D/g, "");
+      value = value.replace(/(\d{2})(\d)/, "($1) $2");
+      value = value.replace(/(\d{4})(\d)/, "$1-$2");
+      setTelefone(value);
+    };
 
     return(
         <>
@@ -160,18 +175,18 @@ export default function NewClient(){
                         onChange={(e) => setEmail(e.target.value)}  
                     />
 
-                    <InputMask 
-                        mask="999.999.999-99" 
+                    <input 
+                        onChange={handleCpfChange}
+                        maxLength={14}
                         placeholder="CPF"
-                        value={cpf}
-                        onChange={(e) => setCpf(e.target.value)}  
+                        value={cpf}  
                     />
 
-                    <InputMask 
-                        mask="(99) 99999-9999" 
+                    <input 
                         placeholder="Telefone"
                         value={telefone}
-                        onChange={(e) => setTelefone(e.target.value)}  
+                        onChange={handlePhoneChange}
+                        maxLength={15} 
                     />
 
                     <input 
